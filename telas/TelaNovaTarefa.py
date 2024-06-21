@@ -33,9 +33,9 @@ class TelaNovaTarefa(ctk.CTkFrame):
             novaTarefa = {'nomeTarefa':self.entryNovaTarefa.get(),
                           'prioridadeTarefa':[x.id for x in PrioridadeModel.select(PrioridadeModel.id).where(PrioridadeModel.nomePrioridade == self.cbPrioridade.get())][0],
                           'statusTarefa' : [x.id for x in StatusModel.select(StatusModel.id).where(StatusModel.nomeStatus == 'Pendente')][0] }
-            print(novaTarefa)
             TarefaModel.create(**novaTarefa)
             self.master.adicionarNovaTarefa()
+            self.entryNovaTarefa.delete(0, 'end')
     def ocultarTela(self):
         if self.emExibicao:
             self.forget()

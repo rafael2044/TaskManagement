@@ -8,5 +8,5 @@ class TarefaModel(DataModel):
     nomeTarefa = CharField()
     prioridadeTarefa = ForeignKeyField(PrioridadeModel, backref='tarefas')
     dataHoraTarefa = DateTimeField(formats="%d/%m/%Y %H:%M",
-                                   default=datetime.datetime.now())
+                                   default=datetime.datetime.now().strftime("%d/%m/%Y %H:%M"))
     statusTarefa = ForeignKeyField(StatusModel, backref='tarefas')
