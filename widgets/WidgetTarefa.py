@@ -1,8 +1,10 @@
 import customtkinter as ctk
 from classes.Tarefa import Tarefa
+from models.TarefaModel import TarefaModel
 class WidgetTarefa(ctk.CTkFrame):
-    def __init__(self, master, tarefa:Tarefa):
+    def __init__(self, master,root, tarefa:Tarefa):
         super().__init__(master)
+        self.root= root
         self.PRIORIDADES = {'Alta': {'id': 3, 'color': 'red'},
                             'Media': {'id': 2, 'color': 'yellow'},
                             'Baixa': {'id': 1, 'color': 'green'}}
@@ -26,10 +28,11 @@ class WidgetTarefa(ctk.CTkFrame):
         self.btPrioridade = ctk.CTkButton(self.frLeft, text='', corner_radius=150,
                                           width=30, height=30, command=self.alterarPrioridade)
         self.checarPrioridade()
-        self.btExcluir = ctk.CTkButton(self.frLeft, text='X', width=30, height=30)
+        self.btExcluir = ctk.CTkButton(self.frLeft, text='X', width=30, height=30,
+                                       command=self.excluirTarefa)
         self.cbStatus = ctk.CTkCheckBox(self.frLeft, text='', width=30, height=30,
-                                        onvalue='Finalizada', offvalue='Pendente',
-                                        variable=self.vStatus)
+                                        onvalue='Concluida', offvalue='Pendente',
+                                        variable=self.vStatus, command=self.alterarStatus)
         self.lbNomeTarefa = ctk.CTkLabel(self.frRight, text=self.tarefa.getNome(), font=self.fontText)
         self.lbDataHora = ctk.CTkLabel(self.frRight, text=self.tarefa.getDataHora(),
                                        font=self.fontData)
@@ -63,4 +66,8 @@ class WidgetTarefa(ctk.CTkFrame):
         self.checarPrioridade()
     def alterarStatus(self):
         self.tarefa.setStatus(self.vStatus.get())
+
+    def excluirTarefa(self):
+        self.tarefa.excluirTarefa()
+        self.root.excluirTarefaEWidget(self)
 

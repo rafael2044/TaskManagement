@@ -14,6 +14,8 @@ class TelaPrincipal(ctk.CTk):
         self.carregarWidgets()
         self.exibirWidgets()
         self.carregarTarefas()
+        self.carregarTarefas()
+        self.exibirAllTarefas()
 
         self.mainloop()
 
@@ -32,7 +34,7 @@ class TelaPrincipal(ctk.CTk):
         self.frMain = ctk.CTkFrame(self)
         self.frHeader = ctk.CTkFrame(self.frMain, height=50)
         self.frFilter = ctk.CTkFrame(self.frMain, height=50)
-        self.frContent = ctk.CTkFrame(self.frMain)
+        self.frContent = ctk.CTkScrollableFrame(self.frMain)
 
 
         self.lbTitulo = ctk.CTkLabel(self.frHeader, text='Tarefas que você precisa fazer',
@@ -55,20 +57,31 @@ class TelaPrincipal(ctk.CTk):
         self.tarefas = [Tarefa(x.id,x.nomeTarefa,x.prioridadeTarefa.nomePrioridade, x.dataHoraTarefa,
                                x.statusTarefa.nomeStatus) for x in TarefaModel.select().execute()]
         self.widgetsTarefa = []
-        if self.tarefas:
+        if len(self.tarefas) != 0:
             for t in self.tarefas:
-                self.widgetsTarefa.append(WidgetTarefa(self.frContent, t))
+                self.widgetsTarefa.append(WidgetTarefa(self.frContent,self, t))
 
-        if self.widgetsTarefa:
+    def exibirAllTarefas(self):
+        if len(self.widgetsTarefa) != 0:
             for wt in self.widgetsTarefa:
-                wt.pack(fill=ctk.X, padx=10, pady=5, side=ctk.TOP)
-    def criarWidgetsTarefa(self):
-        if self.widgetsTarefa == None:
-            self.widgetsTarefa = []
+                wt.pack(fill=ctk.X, side=ctk.TOP, padx=10, pady=5)
 
-        if len(self.widgetsTarefa) == 0:
-
-
+    def adicionarNovaTarefa(self):
+        if len(self.tarefas) > 0:
+            ultimaTarefaAtual = self.tarefas[-1]
+            novaTarefa = [Tarefa(x.id,x.nomeTarefa,x.prioridadeTarefa.nomePrioridade, x.dataHoraTarefa,
+                                   x.statusTarefa.nomeStatus) for x in TarefaModel.select().where(TarefaModel.id == ultimaTarefaAtual.getId()+1)][0]
+            self.tarefas.append(novaTarefa)
+            widgetNovaTarefa = WidgetTarefa(self.frContent,self, novaTarefa)
+            self.widgetsTarefa.append(widgetNovaTarefa)
+            widgetNovaTarefa.pack(fill=ctk.X, side=ctk.TOP, padx=10, pady=5)
+        else:
+            novaTarefa = [Tarefa(x.id,x.nomeTarefa,x.prioridadeTarefa.nomePrioridade, x.dataHoraTarefa,
+                                   x.statusTarefa.nomeStatus) for x in TarefaModel.select().where(TarefaModel.id == 1)][0]
+            self.tarefas.append(novaTarefa)
+            widgetNovaTarefa = WidgetTarefa(self.frContent,self, novaTarefa)
+            self.widgetsTarefa.append(widgetNovaTarefa)
+            widgetNovaTarefa.pack(fill=ctk.X, side=ctk.TOP, padx=10, pady=5)
     def exibirTelaNovaTarefa(self):
         self.ocultarTela()
 
@@ -87,4 +100,9 @@ class TelaPrincipal(ctk.CTk):
         if not self.emExibicao:
             self.frMain.pack(fill=ctk.BOTH, expand=True)
             self.emExibicao = True
+
+    def excluirTarefaEWidget(self, wtarefa):
+        self.tarefas.remove(wtarefa.tarefa)
+        self.widgetsTarefa.remove(wtarefa)
+        wtarefa.destroy()
 

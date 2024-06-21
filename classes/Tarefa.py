@@ -1,4 +1,6 @@
 from models.TarefaModel import TarefaModel
+from models.PrioridadeModel import PrioridadeModel
+from models.StatusModel import StatusModel
 class Tarefa:
     def __init__(self, idTarefa:int, nomeTarefa:str, prioridadeTarefa:str, dataHoraTarefa:str, statusTarefa:str):
         self.__id = idTarefa
@@ -7,6 +9,8 @@ class Tarefa:
         self.__dataHora = dataHoraTarefa
         self.__status = statusTarefa
 
+    def getId(self):
+        return self.__id
     def getNome(self):
         return self.__nome
 
@@ -26,7 +30,7 @@ class Tarefa:
         self.__prioridade = prioridadeTarefa
         tarefa = TarefaModel.get(TarefaModel.id == self.__id)
         if tarefa:
-            tarefa.prioridadeTarefa = prioridadeTarefa
+            tarefa.prioridadeTarefa = PrioridadeModel.select(PrioridadeModel.id).where(PrioridadeModel.nomePrioridade == prioridadeTarefa).execute()[0].id
             tarefa.save()
 
     def setDataHora(self, dataHoraTarefa:str):
@@ -36,5 +40,9 @@ class Tarefa:
         self.__status = statusTarefa
         tarefa = TarefaModel.get(TarefaModel.id == self.__id)
         if tarefa:
-            tarefa.statusTarefa = statusTarefa
+            tarefa.statusTarefa = StatusModel.select(StatusModel.id).where(StatusModel.nomeStatus == statusTarefa).execute()[0].id
             tarefa.save()
+
+    def excluirTarefa(self):
+        tarefa = TarefaModel.get(TarefaModel.id == self.__id)
+        tarefa.delete_instance()
